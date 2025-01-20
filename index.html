@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Typing Game</title>
+  <style>
+    /* CSS goes here */
+    body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .game-container {
+    text-align: center;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 300px;
+  }
+  
+  h1 {
+    margin-bottom: 20px;
+  }
+  
+  .scoreboard {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .word-display {
+    font-size: 1.5em;
+    margin: 20px 0;
+  }
+  
+  #input {
+    width: 100%;
+    padding: 10px;
+    font-size: 1em;
+    margin-bottom: 20px;
+  }
+  
+  #start-btn {
+    padding: 10px 20px;
+    font-size: 1em;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  #start-btn:hover {
+    background-color: #0056b3;
+  }
+  
+  </style>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="game-container">
+    <h1>Typing Game</h1>
+    <div class="scoreboard">
+      <p>Score: <span id="score">0</span></p>
+      <p>Time Left: <span id="time">30</span>s</p>
+    </div>
+    <div class="word-display">
+      <p id="word">Press Start to Begin</p>
+    </div>
+    <input type="text" id="input" placeholder="Type here..." disabled />
+    <button id="start-btn">Start Game</button>
+  </div>
+  <script src="script.js"></script>
+  <script>
+    /* JS goes here*/
+    const words = [
+    "hello", "world", "javascript", "coding", "typing", 
+    "challenge", "game", "react", "html", "css", "developer"
+  ];
+  let currentWord = "";
+  let score = 0;
+  let time = 30;
+  let timer;
+  
+  // DOM Elements
+  const wordDisplay = document.getElementById("word");
+  const input = document.getElementById("input");
+  const scoreDisplay = document.getElementById("score");
+  const timeDisplay = document.getElementById("time");
+  const startBtn = document.getElementById("start-btn");
+  
+  // Start the game
+  startBtn.addEventListener("click", startGame);
+  
+  function startGame() {
+    score = 0;
+    time = 30;
+    input.value = "";
+    input.disabled = false;
+    input.focus();
+    startBtn.disabled = true;
+  
+    // Update UI
+    scoreDisplay.textContent = score;
+    timeDisplay.textContent = time;
+  
+    // Start timers and display the first word
+    nextWord();
+    timer = setInterval(updateTime, 1000);
+  }
+  
+  // Show a new random word
+  function nextWord() {
+    currentWord = words[Math.floor(Math.random() * words.length)];
+    wordDisplay.textContent = currentWord;
+  }
+  
+  // Update the timer
+  function updateTime() {
+    time--;
+    timeDisplay.textContent = time;
+  
+    if (time <= 0) {
+      clearInterval(timer);
+      endGame();
+    }
+  }
+  
+  // Handle user input
+  input.addEventListener("input", () => {
+    if (input.value.trim() === currentWord) {
+      score++;
+      scoreDisplay.textContent = score;
+      input.value = "";
+      nextWord();
+    }
+  });
+  
+  // End the game
+  function endGame() {
+    input.disabled = true;
+    startBtn.disabled = false;
+    wordDisplay.textContent = `Game Over! Your score: ${score}`;
+  }
+  
+  </script>
+</body>
+</html>
