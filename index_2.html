@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZType-Inspired Typing Game</title>
+  <style>
+    /* CSS styles (see below) */
+    body {
+  font-family: Arial, sans-serif;
+  background-color: #0f172a;
+  color: #fff;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.game-container {
+  text-align: center;
+  width: 80%;
+  max-width: 600px;
+}
+
+h1 {
+  margin-bottom: 20px;
+}
+
+.scoreboard {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+#game-area {
+  position: relative;
+  background: #1e293b;
+  border: 2px solid #64748b;
+  height: 400px;
+  overflow: hidden;
+}
+
+.enemy-word {
+  position: absolute;
+  font-size: 1.5em;
+  white-space: nowrap;
+  color: #fca5a5;
+}
+
+.projectile {
+  position: absolute;
+  width: 5px;
+  height: 10px;
+  background: #38bdf8;
+  border-radius: 50%;
+}
+
+#input {
+  width: 100%;
+  padding: 10px;
+  font-size: 1em;
+  margin-top: 20px;
+}
+
+#start-btn {
+  padding: 10px 20px;
+  font-size: 1em;
+  background-color: #38bdf8;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#start-btn:hover {
+  background-color: #0284c7;
+}
+
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <h1>ZType Typing Game</h1>
+    <div class="scoreboard">
+      <p>Score: <span id="score">0</span></p>
+      <p>Health: <span id="health">3</span></p>
+    </div>
+    <div id="game-area"></div>
+    <input type="text" id="input" placeholder="Type here..." autofocus />
+    <button id="start-btn">Start Game</button>
+  </div>
+  <script>
+    // JavaScript logic (see below)
+    const words = ["hello", "world", "javascript", "coding", "typing", "game", "react", "html", "css", "developer"];
+let score = 0;
+let health = 3;
+let gameInterval;
+let enemies = [];
+
+// DOM Elements
+const gameArea = document.getElementById("game-area");
+const input = document.getElementById("input");
+const scoreDisplay = document.getElementById("score");
+const healthDisplay = document.getElementById("health");
+const startBtn = document.getElementById("start-btn");
+
+// Start the game
+startBtn.addEventListener("click", startGame);
+
+function startGame() {
+  resetGame();
+  gameInterval = setInterval(spawnEnemy, 2000);
+}
+
+function resetGame() {
+  score = 0;
+  health = 3;
+  enemies = [];
+  gameArea.innerHTML = "";
+  input.value = "";
+  scoreDisplay.textContent = score;
+  healthDisplay.textContent = health;
+  input.focus();
+}
+
+// Spawn a new enemy word
+function spawnEnemy() {
+  const enemy = document.createElement("div");
+  const word = words[Math.floor(Math.random() * words.length)];
+  const xPosition = Math.random() * (gameArea.offsetWidth - 100);
+
+  enemy.textContent = word;
+  enemy.className = "enemy-word";
+  enemy.style.left = `${xPosition}px`;
+  enemy.style.top = "0px";
+
+  gameArea.appendChild(enemy);
+  enemies.push({ element: enemy, word });
+
+  moveEnemy(enemy);
+}
+
+// Move the enemy downward
+function moveEnemy(enemy) {
+  const interval = setInterval(() => {
+    const currentTop = parseInt(enemy.style.top);
+    if (currentTop >= gameArea.offsetHeight - 30) {
+      enemy.remove();
+      enemies = enemies.filter(e => e.element !== enemy);
+      loseHealth();
+      clearInterval(interval);
+    } else {
+      enemy.style.top = `${currentTop + 2}px`;
+    }
+  }, 30);
+}
+
+// Handle typing input
+input.addEventListener("input", () => {
+  const typedWord = input.value.trim();
+
+  enemies.forEach((enemy, index) => {
+    if (enemy.word.startsWith(typedWord)) {
+      if (enemy.word === typedWord) {
+        score++;
+        scoreDisplay.textContent = score;
+        createProjectile(enemy.element);
+        enemy.element.remove();
+        enemies.splice(index, 1);
+        input.value = "";
+      }
+    }
+  });
+});
+
+// Create a projectile animation
+function createProjectile(target) {
+  const projectile = document.createElement("div");
+  projectile.className = "projectile";
+  projectile.style.left = `${target.offsetLeft + target.offsetWidth / 2}px`;
+  projectile.style.top = `${gameArea.offsetHeight}px`;
+
+  gameArea.appendChild(projectile);
+
+  const interval = setInterval(() => {
+    const currentTop = parseInt(projectile.style.top);
+    if (currentTop <= target.offsetTop) {
+      clearInterval(interval);
+      projectile.remove();
+    } else {
+      projectile.style.top = `${currentTop - 5}px`;
+    }
+  }, 10);
+}
+
+// Lose health
+function loseHealth() {
+  health--;
+  healt
+}
+  </script>
+</body>
+</html>
